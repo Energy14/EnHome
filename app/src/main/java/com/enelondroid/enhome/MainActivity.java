@@ -4,18 +4,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 import android.os.AsyncTask;
 
 import com.jcraft.jsch.*;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Properties;
-import java.util.Scanner;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,17 +16,36 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        final Button button = findViewById(R.id.button);
+        final Button blinkButton = findViewById(R.id.blinkBut);
+        final Button offButton = findViewById(R.id.turnOffBut);
+        final Button onButton = findViewById(R.id.turnOnBut);
 
 
-        button.setOnClickListener(new View.OnClickListener() {
+        blinkButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                new AsyncTaskRunner().execute();
+                String[] params = {"cd Desktop && python blink.py"};
+                new AsyncTaskRunner().execute(params);
 
                 //executeRemoteCommand();
-                Toast.makeText(MainActivity.this,
-                        "Button pressed", Toast.LENGTH_SHORT).show();
+            }
+        });
+        offButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                String[] params = {"cd Desktop && python turnOff.py"};
+                new AsyncTaskRunner().execute(params);
+
+                //executeRemoteCommand();
+            }
+        });
+        onButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                String[] params = {"cd Desktop && python turnOn.py"};
+                new AsyncTaskRunner().execute(params);
+
+                //executeRemoteCommand();
             }
         });
     }
@@ -43,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
     /*public void executeRemoteCommand() {
 
     }*/
+
+
     private class AsyncTaskRunner extends AsyncTask<String, Void, Void> {
 
         @Override
@@ -50,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
             String user = "pi";
             String password = "raspi";
             String host = "192.168.8.111";
+            String command = params[0];
+
             int port = 22;
 
             try {
@@ -61,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
                 // create the execution channel over the session
                 ChannelExec channelExec = (ChannelExec) session.openChannel("exec");
                 // Set the command to execute on the channel and execute the command
-                channelExec.setCommand("cd Desktop && python blink.py");
+                channelExec.setCommand(command);
                 channelExec.connect();
                 session.disconnect();
             } catch (JSchException e) {
