@@ -63,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
             String password = "raspi";
             String host = "192.168.8.111";
             String command = params[0];
-
             int port = 22;
 
             try {
