@@ -11,44 +11,46 @@
         android:id="@+id/blinkBut"
         android:layout_width="94dp"
         android:layout_height="59dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="blink"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="test"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.942" />
+        app:layout_constraintVertical_bias="0.972" />
 
     <Button
         android:id="@+id/turnOffBut"
         android:layout_width="140dp"
         android:layout_height="76dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="72dp"
         android:text="off"
         app:layout_constraintBottom_toTopOf="@+id/blinkBut"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.498" />
+        app:layout_constraintTop_toBottomOf="@+id/turnOnBut"
+        app:layout_constraintVertical_bias="0.737" />
 
-    <Button
+    <ImageButton
         android:id="@+id/turnOnBut"
         android:layout_width="140dp"
-        android:layout_height="76dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_height="140dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="on"
-        app:layout_constraintBottom_toTopOf="@+id/blinkBut"
+        android:layout_marginTop="156dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/ripple_effect"
+        android:elevation="0dp"
+        android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.171" />
+        app:srcCompat="@drawable/powerbut_white" />
 </android.support.constraint.ConstraintLayout>

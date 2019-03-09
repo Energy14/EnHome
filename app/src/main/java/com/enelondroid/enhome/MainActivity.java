@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.os.AsyncTask;
+import android.widget.ImageButton;
 
 import com.jcraft.jsch.*;
 
@@ -18,42 +19,28 @@ public class MainActivity extends AppCompatActivity {
 
         final Button blinkButton = findViewById(R.id.blinkBut);
         final Button offButton = findViewById(R.id.turnOffBut);
-        final Button onButton = findViewById(R.id.turnOnBut);
+        final ImageButton onButton = findViewById(R.id.turnOnBut);
 
 
         blinkButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
-                String[] params = {"cd Desktop && python blink.py"};
+                String[] params = {"cd Desktop && python blink.py", "192.168.8.111"};
                 new AsyncTaskRunner().execute(params);
-
-                //executeRemoteCommand();
             }
         });
         offButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
-                String[] params = {"cd Desktop && python turnOff.py"};
+                String[] params = {"cd Desktop && python turnOff.py", "192.168.8.111"};
                 new AsyncTaskRunner().execute(params);
-
-                //executeRemoteCommand();
             }
         });
         onButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
-                String[] params = {"cd Desktop && python turnOn.py"};
+                String[] params = {"cd Desktop && python turnOn.py", "192.168.8.111"};
                 new AsyncTaskRunner().execute(params);
-
-                //executeRemoteCommand();
             }
         });
     }
-
-    /*public void executeRemoteCommand() {
-
-    }*/
-
 
     private class AsyncTaskRunner extends AsyncTask<String, Void, Void> {
 
@@ -61,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         protected Void doInBackground(String... params) {
             String user = "pi";
             String password = "raspi";
-            String host = "192.168.8.111";
+            String host = params[1];
             String command = params[0];
             int port = 22;
 
