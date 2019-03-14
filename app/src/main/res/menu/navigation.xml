@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/devices"
+        android:icon="@drawable/powerbut_white"
+        android:title="@string/devices" />
+
+    <item
+        android:id="@+id/modes"
+        android:icon="@drawable/modes_white"
+        android:title="@string/modes" />
+
+    <item
+        android:id="@+id/settings"
+        android:icon="@drawable/settings_white"
+        android:title="@string/settings" />
+
+</menu>

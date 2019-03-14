@@ -1,11 +1,17 @@
 package com.enelondroid.enhome;
 
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
+import android.support.v4.app.Fragment;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.os.AsyncTask;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
@@ -17,15 +23,16 @@ public class MainActivity extends AppCompatActivity {
 
     boolean isOn = false;
     boolean isInside = true;
+    ActionBar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        toolbar = getSupportActionBar();
+        toolbar.hide();
 
-        //final Button blinkButton = findViewById(R.id.blinkBut);
-        //final Button offButton = findViewById(R.id.turnOffBut);
         final ImageButton onButton = findViewById(R.id.turnOnBut);
 
         final SharedPreferences buttonState = getSharedPreferences("buttonState", 0);
@@ -42,6 +49,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        toolbar.setTitle("Devices");
+
+
         /*blinkButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 String[] params = {"cd Desktop && python blink.py", "192.168.8.111"};
@@ -54,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
                 new AsyncTaskRunner().execute(params);
             }
         });*/
+
+
         onButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if(isOn) {
@@ -100,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     private class AsyncTaskRunner extends AsyncTask<String, Void, Void> {
 
         @Override
@@ -129,6 +145,35 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
     }
+
+
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            Fragment fragment;
+            switch (item.getItemId()) {
+                case R.id.devices:
+                    toolbar.setTitle("Devices");
+                    return true;
+                case R.id.settings:
+                    toolbar.setTitle("Settings");
+                    return true;
+                case R.id.modes:
+                    toolbar.setTitle("Modes");
+                    return true;
+            }
+            return false;
+        }
+    };
+    /*private void loadFragment(Fragment fragment) {
+        // load fragment
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.frame_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    } */
 }
 
 
