@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:key="inside_ip"
+        android:summary="Set the local IP address of the Enhome device"
+        android:title="Inside IP"/>
+
+    <CheckBoxPreference
+        android:key="use_outside_ip"
+        android:defaultValue="false"
+        android:summary="Does the Enhome device have an outside IP address?"
+        android:title="Use outside IP"/>
+
+    <EditTextPreference
+        android:dependency="use_outside_ip"
+        android:key="outside_ip"
+        android:summary="Set the outside IP address of the Enhome device"
+        android:title="Outside IP" />
+</PreferenceScreen>

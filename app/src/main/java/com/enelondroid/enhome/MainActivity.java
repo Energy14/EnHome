@@ -1,5 +1,6 @@
 package com.enelondroid.enhome;
 
+import android.content.Intent;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -9,12 +10,14 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.os.AsyncTask;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.jcraft.jsch.*;
@@ -24,22 +27,39 @@ public class MainActivity extends AppCompatActivity {
     boolean isOn = false;
     boolean isInside = true;
     ActionBar toolbar;
+    String insideIp;
+    String outsideIp;
+    Boolean useOutsideIp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
         toolbar = getSupportActionBar();
         toolbar.hide();
+        toolbar.setTitle("Devices");
+        navigation.getMenu().findItem(R.id.devices).setChecked(true);
 
         final ImageButton onButton = findViewById(R.id.turnOnBut);
 
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+
         final SharedPreferences buttonState = getSharedPreferences("buttonState", 0);
         final SharedPreferences.Editor editor = buttonState.edit();
+
         ToggleButton whereBut = (ToggleButton) findViewById(R.id.whereBut);
 
+        insideIp = settings.getString("inside_ip", "0");
+        useOutsideIp = settings.getBoolean("use_outside_ip", false);
+        outsideIp = settings.getString("outside_ip", "5");
+
+
         isOn = buttonState.getBoolean("isOn",false);
+
         isInside = buttonState.getBoolean("isInside", true);
         if(isOn){
             onButton.setColorFilter(Color.rgb( 44, 117, 255));
@@ -47,37 +67,37 @@ public class MainActivity extends AppCompatActivity {
         if(!isInside){
             whereBut.setChecked(true);
         }
-
-
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.bottom_navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-        toolbar.setTitle("Devices");
-
-
-        /*blinkButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                String[] params = {"cd Desktop && python blink.py", "192.168.8.111"};
-                new AsyncTaskRunner().execute(params);
+        if (insideIp.equals("0")) {
+            Toast.makeText(this, "Set up your inside IP in settings!",
+                    Toast.LENGTH_LONG).show();
+        }
+        if (!useOutsideIp) {
+            whereBut.setVisibility(View.INVISIBLE);
+        } else {
+            if (outsideIp.equals("5")) {
+                Toast.makeText(this, "Set up your outside IP in settings!",
+                        Toast.LENGTH_LONG).show();
             }
-        });
-        offButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                String[] params = {"cd Desktop && python turnOff.py", "192.168.8.111"};
-                new AsyncTaskRunner().execute(params);
-            }
-        });*/
-
+        }
 
         onButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                if (insideIp.equals("0")) {
+                    Toast.makeText(MainActivity.this, "Set up your inside IP in settings!",
+                            Toast.LENGTH_LONG).show();
+                } else if (outsideIp.equals("5") && useOutsideIp) {
+                    Toast.makeText(MainActivity.this, "Set up your outside IP in settings!",
+                            Toast.LENGTH_LONG).show();
+                }
                 if(isOn) {
                     if(isInside){
-                        String[] params = {"cd Desktop && python turnOff.py", "192.168.8.111"};
+                        String[] params = {"cd enhome && python turnOff.py", insideIp};
                         new AsyncTaskRunner().execute(params);
                     } else {
-                        String[] params = {"cd Desktop && python turnOff.py", "enelon.ddns.net"};
-                        new AsyncTaskRunner().execute(params);
+                        if(useOutsideIp) {
+                            String[] params = {"cd enhome && python turnOff.py", outsideIp};
+                            new AsyncTaskRunner().execute(params);
+                        }
                     }
                     isOn = false;
                     onButton.setColorFilter(null);
@@ -85,11 +105,13 @@ public class MainActivity extends AppCompatActivity {
                     editor.apply();
                 } else {
                     if(isInside){
-                        String[] params = {"cd Desktop && python turnOn.py", "192.168.8.111"};
+                        String[] params = {"cd enhome && python turnOn.py", insideIp};
                         new AsyncTaskRunner().execute(params);
                     } else {
-                        String[] params = {"cd Desktop && python turnOn.py", "enelon.ddns.net"};
-                        new AsyncTaskRunner().execute(params);
+                        if(useOutsideIp) {
+                            String[] params = {"cd enhome && python turnOn.py", outsideIp};
+                            new AsyncTaskRunner().execute(params);
+                        }
                     }
                     isOn = true;
                     onButton.setColorFilter(Color.rgb( 44, 117, 255));
@@ -159,6 +181,8 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 case R.id.settings:
                     toolbar.setTitle("Settings");
+                    Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                    startActivity(intent);
                     return true;
                 case R.id.modes:
                     toolbar.setTitle("Modes");
