@@ -51,8 +51,6 @@ public class MainActivity extends AppCompatActivity {
         final SharedPreferences buttonState = getSharedPreferences("buttonState", 0);
         final SharedPreferences.Editor editor = buttonState.edit();
 
-        ToggleButton whereBut = (ToggleButton) findViewById(R.id.whereBut);
-
         insideIp = settings.getString("inside_ip", "0");
         useOutsideIp = settings.getBoolean("use_outside_ip", false);
         outsideIp = settings.getString("outside_ip", "5");
@@ -64,20 +62,13 @@ public class MainActivity extends AppCompatActivity {
         if(isOn){
             onButton.setColorFilter(Color.rgb( 44, 117, 255));
         }
-        if(!isInside){
-            whereBut.setChecked(true);
-        }
         if (insideIp.equals("0")) {
             Toast.makeText(this, "Set up your inside IP in settings!",
                     Toast.LENGTH_LONG).show();
         }
-        if (!useOutsideIp) {
-            whereBut.setVisibility(View.INVISIBLE);
-        } else {
-            if (outsideIp.equals("5")) {
-                Toast.makeText(this, "Set up your outside IP in settings!",
-                        Toast.LENGTH_LONG).show();
-            }
+        if (outsideIp.equals("5") && useOutsideIp) {
+            Toast.makeText(this, "Set up your outside IP in settings!",
+                    Toast.LENGTH_LONG).show();
         }
 
         onButton.setOnClickListener(new View.OnClickListener() {
@@ -90,47 +81,32 @@ public class MainActivity extends AppCompatActivity {
                             Toast.LENGTH_LONG).show();
                 }
                 if(isOn) {
-                    if(isInside || !useOutsideIp){
+                    if (!useOutsideIp) {
                         String[] params = {"cd enhome && python turnOff.py", insideIp};
-                        new AsyncTaskRunner().execute(params);
+                        new MainActivity.AsyncTaskRunner().execute(params);
                     } else {
-                        if(useOutsideIp) {
-                            String[] params = {"cd enhome && python turnOff.py", outsideIp};
-                            new AsyncTaskRunner().execute(params);
-                        }
+                        String[] params = {"cd enhome && python turnOff.py", insideIp};
+                        new MainActivity.AsyncTaskRunner().execute(params);
+                        String[] params2 = {"cd enhome && python turnOff.py", outsideIp};
+                        new MainActivity.AsyncTaskRunner().execute(params2);
                     }
                     isOn = false;
                     onButton.setColorFilter(null);
                     editor.putBoolean("isOn",false);
                     editor.apply();
                 } else {
-                    if(isInside || !useOutsideIp){
+                    if (!useOutsideIp) {
                         String[] params = {"cd enhome && python turnOn.py", insideIp};
-                        new AsyncTaskRunner().execute(params);
+                        new MainActivity.AsyncTaskRunner().execute(params);
                     } else {
-                        if(useOutsideIp) {
-                            String[] params = {"cd enhome && python turnOn.py", outsideIp};
-                            new AsyncTaskRunner().execute(params);
-                        }
+                        String[] params = {"cd enhome && python turnOn.py", insideIp};
+                        new MainActivity.AsyncTaskRunner().execute(params);
+                        String[] params2 = {"cd enhome && python turnOn.py", outsideIp};
+                        new MainActivity.AsyncTaskRunner().execute(params2);
                     }
                     isOn = true;
                     onButton.setColorFilter(Color.rgb( 44, 117, 255));
                     editor.putBoolean("isOn",true);
-                    editor.apply();
-                }
-            }
-        });
-        whereBut.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    // The toggle is enabled - outside
-                    isInside = false;
-                    editor.putBoolean("isInside",false);
-                    editor.apply();
-                } else {
-                    // The toggle is disabled - inside
-                    isInside = true;
-                    editor.putBoolean("isInside",true);
                     editor.apply();
                 }
             }
