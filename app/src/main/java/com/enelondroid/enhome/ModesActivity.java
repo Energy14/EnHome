@@ -9,26 +9,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-public class SettingsActivity extends AppCompatActivity {
+public class ModesActivity extends AppCompatActivity {
 
     ActionBar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
+        setContentView(R.layout.activity_modes);
 
         toolbar = getSupportActionBar();
         toolbar.hide();
-        toolbar.setTitle("Settings");
-        setTheme(R.style.SettingsStyle);
+        toolbar.setTitle("Modes");
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        navigation.getMenu().findItem(R.id.settings).setChecked(true);
-
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new settingsFragment()).commit();
+        navigation.getMenu().findItem(R.id.modes).setChecked(true);
 
     }
 
@@ -41,16 +38,16 @@ public class SettingsActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.devices:
                     toolbar.setTitle("Devices");
-                    Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
-                    startActivity(intent);
+                    Intent intentDevices = new Intent(ModesActivity.this, MainActivity.class);
+                    startActivity(intentDevices);
                     return true;
                 case R.id.settings:
                     toolbar.setTitle("Settings");
+                    Intent intentSettings = new Intent(ModesActivity.this, SettingsActivity.class);
+                    startActivity(intentSettings);
                     return true;
                 case R.id.modes:
                     toolbar.setTitle("Modes");
-                    Intent intentModes = new Intent(SettingsActivity.this, ModesActivity.class);
-                    startActivity(intentModes);
                     return true;
             }
             return false;

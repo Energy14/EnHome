@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                             Toast.LENGTH_LONG).show();
                 }
                 if(isOn) {
-                    if(isInside){
+                    if(isInside || !useOutsideIp){
                         String[] params = {"cd enhome && python turnOff.py", insideIp};
                         new AsyncTaskRunner().execute(params);
                     } else {
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
                     editor.putBoolean("isOn",false);
                     editor.apply();
                 } else {
-                    if(isInside){
+                    if(isInside || !useOutsideIp){
                         String[] params = {"cd enhome && python turnOn.py", insideIp};
                         new AsyncTaskRunner().execute(params);
                     } else {
@@ -181,11 +181,13 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 case R.id.settings:
                     toolbar.setTitle("Settings");
-                    Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                    startActivity(intent);
+                    Intent intentSettings = new Intent(MainActivity.this, SettingsActivity.class);
+                    startActivity(intentSettings);
                     return true;
                 case R.id.modes:
                     toolbar.setTitle("Modes");
+                    Intent intentModes = new Intent(MainActivity.this, ModesActivity.class);
+                    startActivity(intentModes);
                     return true;
             }
             return false;
