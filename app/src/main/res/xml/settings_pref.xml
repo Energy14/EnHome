@@ -17,4 +17,9 @@
         android:key="outside_ip"
         android:summary="Set the outside IP address of the Enhome device"
         android:title="Outside IP" />
+    <EditTextPreference
+        android:key="ssh_timeout"
+        android:defaultValue="1000"
+        android:summary="Timeout for sending commands to Enhome device. Lower values can make the app faster but less stable. Set higher values for slower internet connections."
+        android:title="Command timeout"/>
 </PreferenceScreen>

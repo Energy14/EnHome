@@ -29,7 +29,9 @@ public class MainActivity extends AppCompatActivity {
     ActionBar toolbar;
     String insideIp;
     String outsideIp;
+    String timeout;
     Boolean useOutsideIp;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         insideIp = settings.getString("inside_ip", "0");
         useOutsideIp = settings.getBoolean("use_outside_ip", false);
         outsideIp = settings.getString("outside_ip", "5");
+        timeout = settings.getString("ssh_timeout", "1000");
 
 
         isOn = buttonState.getBoolean("isOn",false);
@@ -82,12 +85,12 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if(isOn) {
                     if (!useOutsideIp) {
-                        String[] params = {"cd enhome && python turnOff.py", insideIp};
+                        String[] params = {"cd enhome && python turnOff.py", insideIp, timeout};
                         new MainActivity.AsyncTaskRunner().execute(params);
                     } else {
-                        String[] params = {"cd enhome && python turnOff.py", insideIp};
+                        String[] params = {"cd enhome && python turnOff.py", insideIp, timeout};
                         new MainActivity.AsyncTaskRunner().execute(params);
-                        String[] params2 = {"cd enhome && python turnOff.py", outsideIp};
+                        String[] params2 = {"cd enhome && python turnOff.py", outsideIp, timeout};
                         new MainActivity.AsyncTaskRunner().execute(params2);
                     }
                     isOn = false;
@@ -96,12 +99,12 @@ public class MainActivity extends AppCompatActivity {
                     editor.apply();
                 } else {
                     if (!useOutsideIp) {
-                        String[] params = {"cd enhome && python turnOn.py", insideIp};
+                        String[] params = {"cd enhome && python turnOn.py", insideIp, timeout};
                         new MainActivity.AsyncTaskRunner().execute(params);
                     } else {
-                        String[] params = {"cd enhome && python turnOn.py", insideIp};
+                        String[] params = {"cd enhome && python turnOn.py", insideIp, timeout};
                         new MainActivity.AsyncTaskRunner().execute(params);
-                        String[] params2 = {"cd enhome && python turnOn.py", outsideIp};
+                        String[] params2 = {"cd enhome && python turnOn.py", outsideIp, timeout};
                         new MainActivity.AsyncTaskRunner().execute(params2);
                     }
                     isOn = true;
@@ -122,13 +125,14 @@ public class MainActivity extends AppCompatActivity {
             String password = "raspi";
             String host = params[1];
             String command = params[0];
+            int sshTimeout = Integer.parseInt(params[2]);
             int port = 22;
 
             try {
                 JSch jsch = new JSch();
                 Session session = jsch.getSession(user, host, port);
                 session.setPassword(password);
-                session.setTimeout(1000);
+                session.setTimeout(sshTimeout);
                 session.setConfig("StrictHostKeyChecking", "no");
                 session.connect();
                 // create the execution channel over the session
