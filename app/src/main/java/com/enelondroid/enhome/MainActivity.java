@@ -1,7 +1,6 @@
 package com.enelondroid.enhome;
 
 import android.content.Intent;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.content.SharedPreferences;
@@ -11,14 +10,11 @@ import android.support.design.widget.BottomNavigationView;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.os.AsyncTask;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import com.jcraft.jsch.*;
 
@@ -173,13 +169,6 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     };
-    /*private void loadFragment(Fragment fragment) {
-        // load fragment
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.frame_container, fragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
-    } */
 }
 
 
