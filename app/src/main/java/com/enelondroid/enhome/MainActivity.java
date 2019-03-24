@@ -21,12 +21,13 @@ import com.jcraft.jsch.*;
 public class MainActivity extends AppCompatActivity {
 
     boolean isOn = false;
+    boolean isLightOn = false;
     boolean isInside = true;
     ActionBar toolbar;
     String insideIp;
     String outsideIp;
     String timeout;
-    Boolean useOutsideIp;
+    boolean useOutsideIp;
 
 
     @Override
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         navigation.getMenu().findItem(R.id.devices).setChecked(true);
 
         final ImageButton onButton = findViewById(R.id.turnOnBut);
+        final ImageButton lightButton = findViewById(R.id.light_but);
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -56,10 +58,13 @@ public class MainActivity extends AppCompatActivity {
 
 
         isOn = buttonState.getBoolean("isOn",false);
-
+        isLightOn = buttonState.getBoolean("isLightOn", false);
         isInside = buttonState.getBoolean("isInside", true);
         if(isOn){
             onButton.setColorFilter(Color.rgb( 44, 117, 255));
+        }
+        if(isLightOn) {
+            lightButton.setColorFilter(Color.rgb( 44, 117, 255));
         }
         if (insideIp.equals("0")) {
             Toast.makeText(this, "Set up your inside IP in settings!",
@@ -106,6 +111,47 @@ public class MainActivity extends AppCompatActivity {
                     isOn = true;
                     onButton.setColorFilter(Color.rgb( 44, 117, 255));
                     editor.putBoolean("isOn",true);
+                    editor.apply();
+                }
+            }
+        });
+
+        lightButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (insideIp.equals("0")) {
+                    Toast.makeText(MainActivity.this, "Set up your inside IP in settings!",
+                            Toast.LENGTH_LONG).show();
+                } else if (outsideIp.equals("5") && useOutsideIp) {
+                    Toast.makeText(MainActivity.this, "Set up your outside IP in settings!",
+                            Toast.LENGTH_LONG).show();
+                }
+                if(isLightOn) {
+                    if (!useOutsideIp) {
+                        String[] params = {"cd enhome && python mqttOff.py", insideIp, timeout};
+                        new MainActivity.AsyncTaskRunner().execute(params);
+                    } else {
+                        String[] params = {"cd enhome && python mqttOff.py", insideIp, timeout};
+                        new MainActivity.AsyncTaskRunner().execute(params);
+                        String[] params2 = {"cd enhome && python mqttOff.py", outsideIp, timeout};
+                        new MainActivity.AsyncTaskRunner().execute(params2);
+                    }
+                    isLightOn = false;
+                    lightButton.setColorFilter(null);
+                    editor.putBoolean("isLightOn",false);
+                    editor.apply();
+                } else {
+                    if (!useOutsideIp) {
+                        String[] params = {"cd enhome && python mqttOn.py", insideIp, timeout};
+                        new MainActivity.AsyncTaskRunner().execute(params);
+                    } else {
+                        String[] params = {"cd enhome && python mqttOn.py", insideIp, timeout};
+                        new MainActivity.AsyncTaskRunner().execute(params);
+                        String[] params2 = {"cd enhome && python mqttOn.py", outsideIp, timeout};
+                        new MainActivity.AsyncTaskRunner().execute(params2);
+                    }
+                    isLightOn = true;
+                    lightButton.setColorFilter(Color.rgb( 44, 117, 255));
+                    editor.putBoolean("isLightOn",true);
                     editor.apply();
                 }
             }
