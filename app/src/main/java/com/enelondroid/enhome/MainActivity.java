@@ -13,7 +13,6 @@ import android.support.v7.preference.PreferenceManager;
 import android.view.MenuItem;
 import android.view.View;
 import android.os.AsyncTask;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -46,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         navigation.getMenu().findItem(R.id.devices).setChecked(true);
 
         final ImageButton onButton = findViewById(R.id.turnOnBut);
-        final ImageButton lightButton = findViewById(R.id.light_but);
+        final ImageButton lightButton = findViewById(R.id.turnOnBut2);
         //final Button secButton = findViewById(R.id.secBut);
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -90,12 +89,12 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if(isOn) {
                     if (!useOutsideIp) {
-                        String[] params = {"cd enhome && python turnOff.py", insideIp, timeout};
+                        String[] params = {"cd enhome && python mqttOff2.py", insideIp, timeout};
                         new MainActivity.AsyncTaskRunner().execute(params);
                     } else {
-                        String[] params = {"cd enhome && python turnOff.py", insideIp, timeout};
+                        String[] params = {"cd enhome && python mqttOff2.py", insideIp, timeout};
                         new MainActivity.AsyncTaskRunner().execute(params);
-                        String[] params2 = {"cd enhome && python turnOff.py", outsideIp, timeout};
+                        String[] params2 = {"cd enhome && python mqttOff2.py", outsideIp, timeout};
                         new MainActivity.AsyncTaskRunner().execute(params2);
                     }
                     isOn = false;
@@ -104,12 +103,12 @@ public class MainActivity extends AppCompatActivity {
                     editor.apply();
                 } else {
                     if (!useOutsideIp) {
-                        String[] params = {"cd enhome && python turnOn.py", insideIp, timeout};
+                        String[] params = {"cd enhome && python mqttOn2.py", insideIp, timeout};
                         new MainActivity.AsyncTaskRunner().execute(params);
                     } else {
-                        String[] params = {"cd enhome && python turnOn.py", insideIp, timeout};
+                        String[] params = {"cd enhome && python mqttOn2.py", insideIp, timeout};
                         new MainActivity.AsyncTaskRunner().execute(params);
-                        String[] params2 = {"cd enhome && python turnOn.py", outsideIp, timeout};
+                        String[] params2 = {"cd enhome && python mqttOn2.py", outsideIp, timeout};
                         new MainActivity.AsyncTaskRunner().execute(params2);
                     }
                     isOn = true;
@@ -160,49 +159,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-        //Add a python script to raspberry pi for running the second esp8266 device
-        /*
-        secButton.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v) {
-                if (insideIp.equals("0")) {
-                    Toast.makeText(MainActivity.this, "Set up your inside IP in settings!",
-                            Toast.LENGTH_LONG).show();
-                } else if (outsideIp.equals("5") && useOutsideIp) {
-                    Toast.makeText(MainActivity.this, "Set up your outside IP in settings!",
-                            Toast.LENGTH_LONG).show();
-                }
-                if(isSecondLightOn) {
-                    if (!useOutsideIp) {
-                        String[] params = {"cd enhome && python mqtt2Off.py", insideIp, timeout};
-                        new MainActivity.AsyncTaskRunner().execute(params);
-                    } else {
-                        String[] params = {"cd enhome && python mqtt2Off.py", insideIp, timeout};
-                        new MainActivity.AsyncTaskRunner().execute(params);
-                        String[] params2 = {"cd enhome && python mqtt2Off.py", outsideIp, timeout};
-                        new MainActivity.AsyncTaskRunner().execute(params2);
-                    }
-                    isSecondLightOn = false;
-                    lightButton.setColorFilter(null);
-                    editor.putBoolean("isSecondLightOn",false);
-                    editor.apply();
-                } else {
-                    if (!useOutsideIp) {
-                        String[] params = {"cd enhome && python mqttOn.py", insideIp, timeout};
-                        new MainActivity.AsyncTaskRunner().execute(params);
-                    } else {
-                        String[] params = {"cd enhome && python mqttOn.py", insideIp, timeout};
-                        new MainActivity.AsyncTaskRunner().execute(params);
-                        String[] params2 = {"cd enhome && python mqttOn.py", outsideIp, timeout};
-                        new MainActivity.AsyncTaskRunner().execute(params2);
-                    }
-                    isSecondLightOn = true;
-                    lightButton.setColorFilter(Color.rgb( 44, 117, 255));
-                    editor.putBoolean("isSecondLightOn",true);
-                    editor.apply();
-                }
-            }
-        });*/
     }
 
 
