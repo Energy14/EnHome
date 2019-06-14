@@ -18,6 +18,15 @@ import android.widget.Toast;
 
 import com.jcraft.jsch.*;
 
+import org.eclipse.paho.android.service.MqttAndroidClient;
+import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+
+import java.io.UnsupportedEncodingException;
+
 public class MainActivity extends AppCompatActivity {
 
     boolean isOn = false;
@@ -128,7 +137,9 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Set up your outside IP in settings!",
                             Toast.LENGTH_LONG).show();
                 }
+
                 if(isLightOn) {
+                    mqttSend("esp8266/4", "0");
                     if (!useOutsideIp) {
                         String[] params = {"cd enhome && python mqttOff.py", insideIp, timeout};
                         new MainActivity.AsyncTaskRunner().execute(params);
@@ -143,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
                     editor.putBoolean("isLightOn",false);
                     editor.apply();
                 } else {
+                    mqttSend("esp8266/4", "1");
                     if (!useOutsideIp) {
                         String[] params = {"cd enhome && python mqttOn.py", insideIp, timeout};
                         new MainActivity.AsyncTaskRunner().execute(params);
@@ -218,7 +230,33 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     };
+    private void mqttSend(String topic, String payload) {
+        String clientId = MqttClient.generateClientId();
+        MqttAndroidClient client =
+                new MqttAndroidClient(MainActivity.this.getApplicationContext(), "192.168.8.111",
+                        clientId);
+        try {
+            IMqttToken token = client.connect();
+            token.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+
+                }
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+
+                }
+            });
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+        byte[] encodedPayload = new byte[0];
+        try {
+            encodedPayload = payload.getBytes("UTF-8");
+            MqttMessage message = new MqttMessage(encodedPayload);
+            client.publish(topic, message);
+        } catch (UnsupportedEncodingException | MqttException e) {
+            e.printStackTrace();
+        }
+    }
 }
-
-
-
