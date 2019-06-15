@@ -69,6 +69,7 @@ public class ModesActivity extends AppCompatActivity {
                     new ModesActivity.AsyncTaskRunner().execute(params2);
                 }
                 editor.putBoolean("isOn",false);
+                editor.putBoolean("isLightOn", false);
                 editor.apply();
             }
         });

@@ -99,30 +99,26 @@ public class MainActivity extends AppCompatActivity {
                             Toast.LENGTH_LONG).show();
                 }
                 if(isOn) {
+                    isOn = false;
                     if (!useOutsideIp) {
-                        String[] params = {"cd enhome && python mqttOff2.py", insideIp, timeout};
-                        new MainActivity.AsyncTaskRunner().execute(params);
+                        mqttSend("esp8266/5", "0");
                     } else {
-                        String[] params = {"cd enhome && python mqttOff2.py", insideIp, timeout};
-                        new MainActivity.AsyncTaskRunner().execute(params);
+                        mqttSend("esp8266/5", "0");
                         String[] params2 = {"cd enhome && python mqttOff2.py", outsideIp, timeout};
                         new MainActivity.AsyncTaskRunner().execute(params2);
                     }
-                    isOn = false;
                     onButton.setColorFilter(null);
                     editor.putBoolean("isOn",false);
                     editor.apply();
                 } else {
+                    isOn = true;
                     if (!useOutsideIp) {
-                        String[] params = {"cd enhome && python mqttOn2.py", insideIp, timeout};
-                        new MainActivity.AsyncTaskRunner().execute(params);
+                        mqttSend("esp8266/5", "1");
                     } else {
-                        String[] params = {"cd enhome && python mqttOn2.py", insideIp, timeout};
-                        new MainActivity.AsyncTaskRunner().execute(params);
+                        mqttSend("esp8266/5", "1");
                         String[] params2 = {"cd enhome && python mqttOn2.py", outsideIp, timeout};
                         new MainActivity.AsyncTaskRunner().execute(params2);
                     }
-                    isOn = true;
                     onButton.setColorFilter(Color.rgb( 44, 117, 255));
                     editor.putBoolean("isOn",true);
                     editor.apply();
