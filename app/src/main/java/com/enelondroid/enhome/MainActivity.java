@@ -22,6 +22,7 @@ import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
@@ -33,10 +34,13 @@ public class MainActivity extends AppCompatActivity {
     boolean isLightOn = false;
     boolean isInside = true;
     boolean isSecondLightOn;
+    boolean sendingSuccess = false;
     ActionBar toolbar;
     String insideIp;
     String outsideIp;
     String timeout;
+    String payload;
+    String topic;
     boolean useOutsideIp;
 
 
@@ -55,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
 
         final ImageButton onButton = findViewById(R.id.turnOnBut);
         final ImageButton lightButton = findViewById(R.id.turnOnBut2);
-        //final Button secButton = findViewById(R.id.secBut);
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -86,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Set up your outside IP in settings!",
                     Toast.LENGTH_LONG).show();
         }
-
         onButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (insideIp.equals("0")) {
@@ -139,32 +141,26 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if(isLightOn) {
-                    mqttSend("esp8266/4", "0");
+                    isLightOn = false;
                     if (!useOutsideIp) {
-                        String[] params = {"cd enhome && python mqttOff.py", insideIp, timeout};
-                        new MainActivity.AsyncTaskRunner().execute(params);
+                        mqttSend("esp8266/4", "1");
                     } else {
-                        String[] params = {"cd enhome && python mqttOff.py", insideIp, timeout};
-                        new MainActivity.AsyncTaskRunner().execute(params);
+                        mqttSend("esp8266/4", "1");
                         String[] params2 = {"cd enhome && python mqttOff.py", outsideIp, timeout};
                         new MainActivity.AsyncTaskRunner().execute(params2);
                     }
-                    isLightOn = false;
                     lightButton.setColorFilter(null);
                     editor.putBoolean("isLightOn",false);
                     editor.apply();
                 } else {
-                    mqttSend("esp8266/4", "1");
+                    isLightOn = true;
                     if (!useOutsideIp) {
-                        String[] params = {"cd enhome && python mqttOn.py", insideIp, timeout};
-                        new MainActivity.AsyncTaskRunner().execute(params);
+                        mqttSend("esp8266/4", "0");
                     } else {
-                        String[] params = {"cd enhome && python mqttOn.py", insideIp, timeout};
-                        new MainActivity.AsyncTaskRunner().execute(params);
+                        mqttSend("esp8266/4", "0");
                         String[] params2 = {"cd enhome && python mqttOn.py", outsideIp, timeout};
                         new MainActivity.AsyncTaskRunner().execute(params2);
                     }
-                    isLightOn = true;
                     lightButton.setColorFilter(Color.rgb( 44, 117, 255));
                     editor.putBoolean("isLightOn",true);
                     editor.apply();
@@ -173,6 +169,41 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void mqttSend(final String topic, final String payload) {
+        String clientId = MqttClient.generateClientId();
+        final MqttAndroidClient client =
+                new MqttAndroidClient(MainActivity.this.getApplicationContext(), "tcp://" + insideIp + ":1883",
+                        clientId);
+        MqttConnectOptions authen = new MqttConnectOptions();
+        authen.setKeepAliveInterval(3);
+        authen.setConnectionTimeout(3);
+        try {
+            IMqttToken token = client.connect();
+            token.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    byte[] encodedPayload = new byte[0];
+                    try {
+                        encodedPayload = payload.getBytes("UTF-8");
+                        MqttMessage message = new MqttMessage(encodedPayload);
+                        client.publish(topic, message);
+                    } catch (UnsupportedEncodingException | MqttException e) {
+                        e.printStackTrace();
+                    }
+                    sendingSuccess = true;
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    Toast.makeText(MainActivity.this, "Connection failed",
+                            Toast.LENGTH_LONG).show();
+                    sendingSuccess = false;
+                }
+            });
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
 
     private class AsyncTaskRunner extends AsyncTask<String, Void, Void> {
 
@@ -230,33 +261,5 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     };
-    private void mqttSend(String topic, String payload) {
-        String clientId = MqttClient.generateClientId();
-        MqttAndroidClient client =
-                new MqttAndroidClient(MainActivity.this.getApplicationContext(), "192.168.8.111",
-                        clientId);
-        try {
-            IMqttToken token = client.connect();
-            token.setActionCallback(new IMqttActionListener() {
-                @Override
-                public void onSuccess(IMqttToken asyncActionToken) {
 
-                }
-                @Override
-                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-
-                }
-            });
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
-        byte[] encodedPayload = new byte[0];
-        try {
-            encodedPayload = payload.getBytes("UTF-8");
-            MqttMessage message = new MqttMessage(encodedPayload);
-            client.publish(topic, message);
-        } catch (UnsupportedEncodingException | MqttException e) {
-            e.printStackTrace();
-        }
-    }
 }

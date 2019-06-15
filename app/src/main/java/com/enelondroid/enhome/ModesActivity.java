@@ -13,6 +13,7 @@ import android.support.v7.preference.PreferenceManager;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
@@ -24,6 +25,7 @@ public class ModesActivity extends AppCompatActivity {
     ActionBar toolbar;
     String insideIp;
     String outsideIp;
+    boolean useOutsideIp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,13 +48,26 @@ public class ModesActivity extends AppCompatActivity {
 
         insideIp = settings.getString("inside_ip", "0");
         outsideIp = settings.getString("outside_ip", "5");
+        useOutsideIp = settings.getBoolean("use_outside_ip", false);
 
         blackoutBut.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                String[] params = {"cd enhome && python blackout.py", insideIp};
-                new ModesActivity.AsyncTaskRunner().execute(params);
-                String[] params2 = {"cd enhome && python blackout.py", outsideIp};
-                new ModesActivity.AsyncTaskRunner().execute(params2);
+                if (insideIp.equals("0")) {
+                    Toast.makeText(ModesActivity.this, "Set up your inside IP in settings!",
+                            Toast.LENGTH_LONG).show();
+                } else if (outsideIp.equals("5") && useOutsideIp) {
+                    Toast.makeText(ModesActivity.this, "Set up your outside IP in settings!",
+                            Toast.LENGTH_LONG).show();
+                }
+                if (!useOutsideIp) {
+                    String[] params = {"cd enhome && python blackout.py", insideIp};
+                    new ModesActivity.AsyncTaskRunner().execute(params);
+                } else {
+                    String[] params = {"cd enhome && python blackout.py", insideIp};
+                    new ModesActivity.AsyncTaskRunner().execute(params);
+                    String[] params2 = {"cd enhome && python blackout.py", outsideIp};
+                    new ModesActivity.AsyncTaskRunner().execute(params2);
+                }
                 editor.putBoolean("isOn",false);
                 editor.apply();
             }
