@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
+    //Method for publishing mqtt messages
     private void mqttSend(final String topic, final String payload) {
         String clientId = MqttClient.generateClientId();
         final MqttAndroidClient client =
