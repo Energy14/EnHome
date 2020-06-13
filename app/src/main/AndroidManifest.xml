@@ -16,8 +16,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <service android:name="org.eclipse.paho.android.service.MqttService" >
-        </service>
 
         <activity android:name=".ModesActivity"
             android:screenOrientation="portrait"></activity>
