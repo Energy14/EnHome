@@ -10,7 +10,7 @@
     ]]>
 
     <ImageButton
-        android:id="@+id/turnOnBut"
+        android:id="@+id/turnOnBut2"
         android:layout_width="145dp"
         android:layout_height="145dp"
         android:layout_marginStart="8dp"
@@ -24,7 +24,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/turnOnBut2"
+        app:layout_constraintTop_toBottomOf="@+id/turnOnBut"
         app:layout_constraintVertical_bias="0.277"
         app:srcCompat="@drawable/powerbut_white" />
 
@@ -42,7 +42,7 @@
         tools:layout_editor_absoluteX="8dp" />
 
     <ImageButton
-        android:id="@+id/turnOnBut2"
+        android:id="@+id/turnOnBut"
         android:layout_width="145dp"
         android:layout_height="145dp"
         android:layout_marginStart="8dp"

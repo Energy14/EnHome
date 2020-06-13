@@ -7,20 +7,23 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import androidx.annotation.NonNull;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
     boolean isOn = false;
     boolean isLightOn = false;
-    boolean isSecondLightOn;
     ActionBar toolbar;
     private FirebaseDatabase database;
     private DatabaseReference roomLight;
@@ -40,8 +43,8 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setTitle("Devices");
         navigation.getMenu().findItem(R.id.devices).setChecked(true);
 
-        final ImageButton onButton = findViewById(R.id.turnOnBut);
-        final ImageButton lightButton = findViewById(R.id.turnOnBut2);
+        final ImageButton roomLightBut = findViewById(R.id.turnOnBut);
+        final ImageButton powerCableBut = findViewById(R.id.turnOnBut2);
 
         final SharedPreferences buttonState = getSharedPreferences("buttonState", 0);
         final SharedPreferences.Editor editor = buttonState.edit();
@@ -49,49 +52,83 @@ public class MainActivity extends AppCompatActivity {
 
         isOn = buttonState.getBoolean("isOn",false);
         isLightOn = buttonState.getBoolean("isLightOn", false);
-        isSecondLightOn = buttonState.getBoolean("isSecondLightOn", false);
 
         if(isOn){
-            onButton.setColorFilter(Color.rgb( 44, 117, 255));
+            roomLightBut.setColorFilter(Color.rgb( 44, 117, 255));
         }
         if(isLightOn) {
-            lightButton.setColorFilter(Color.rgb( 44, 117, 255));
+            powerCableBut.setColorFilter(Color.rgb( 44, 117, 255));
         }
         database = FirebaseDatabase.getInstance();
         roomLight = database.getReference("roomLight");
         powerCable = database.getReference("powerCable");
 
+        roomLight.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (String.valueOf(dataSnapshot.getValue()).equals("1")) {
+                    isOn = false;
+                    roomLightBut.setColorFilter(null);
+                } else {
+                    isOn = true;
+                    roomLightBut.setColorFilter(Color.rgb(44,117,255));
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(MainActivity.this, "Synchronization error",
+                        Toast.LENGTH_LONG).show();
+            }
+        });
 
-        onButton.setOnClickListener(new View.OnClickListener() {
+        powerCable.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (String.valueOf(dataSnapshot.getValue()).equals("1")) {
+                    isOn = false;
+                    powerCableBut.setColorFilter(null);
+                } else {
+                    isOn = true;
+                    powerCableBut.setColorFilter(Color.rgb(44,117,255));
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(MainActivity.this, "Synchronization error",
+                        Toast.LENGTH_LONG).show();
+            }
+        });
+
+        roomLightBut.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if(isOn) {
-
+                    roomLight.setValue(1);
                     isOn = false;
-                    onButton.setColorFilter(null);
+                    roomLightBut.setColorFilter(null);
                     editor.putBoolean("isOn",false);
                     editor.apply();
                 } else {
-
+                    roomLight.setValue(2);
                     isOn = true;
-                    onButton.setColorFilter(Color.rgb( 44, 117, 255));
+                    roomLightBut.setColorFilter(Color.rgb( 44, 117, 255));
                     editor.putBoolean("isOn",true);
                     editor.apply();
                 }
             }
         });
 
-        lightButton.setOnClickListener(new View.OnClickListener() {
+        powerCableBut.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if(isLightOn) {
-
+                    powerCable.setValue(1);
                     isLightOn = false;
-                    lightButton.setColorFilter(null);
+                    powerCableBut.setColorFilter(null);
                     editor.putBoolean("isLightOn",false);
                     editor.apply();
                 } else {
-
+                    powerCable.setValue(2);
                     isLightOn = true;
-                    lightButton.setColorFilter(Color.rgb( 44, 117, 255));
+                    powerCableBut.setColorFilter(Color.rgb( 44, 117, 255));
                     editor.putBoolean("isLightOn",true);
                     editor.apply();
                 }
